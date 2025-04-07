@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>one Million YouTubers</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f4f4f4;
+    }
+    h2 {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 2em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(100, 10px);
+      grid-template-rows: repeat(100, 10px);
+      width: 1000px;
+      height: 1000px;
+      margin: 0 auto;
+    }
+    .pixel {
+      width: 10px;
+      height: 10px;
+      box-sizing: border-box;
+      border: 0.5px solid #eee;
+      background-color: #ccc;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Million YouTubers</h2>
+<div class="grid" id="grid"></div>
+
+<script>
+  const grid = document.getElementById('grid');
+
+  for (let i = 0; i < 10000; i++) {
+    const pixel = document.createElement('div');
+    pixel.className = 'pixel';
+    pixel.title = `Pixel ${i + 1}`;
+
+    pixel.onclick = () => {
+      const url = prompt('Enter a YouTube channel or video URL:');
+      if (url) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.style.display = 'block';
+        a.style.width = '10px';
+        a.style.height = '10px';
+        a.style.backgroundColor = 'red';
+        pixel.replaceWith(a);
+        a.appendChild(pixel);
+      }
+    };
+
+    grid.appendChild(pixel);
+  }
+</script>
+
+</body>
+</html// server.js
+const express = require('express');
+const Stripe = require('stripe');
+const cors = require('cors');
+
+const app = express();
+const stripe = Stripe('your_stripe_secret_key');
+app.use(cors());
+app.use(express.json());
+
+app.post('/create-checkout-session', async (req, res) => {
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [{
+      price_data: {
+        currency: 'inr',
+        product_data: {
+          name: 'Pixel Block on My Million YouTubers',
+        },
+        unit_amount: 10000, // ₹100 in paise
+      },
+      quantity: 1,
+    }],
+    mode: 'payment',
+    success_url: 'https://yourdomain.com/success',
+    cancel_url: 'https://yourdomain.com/cancel',
+  });
+
+  res.json({ id: session.id });
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
+
