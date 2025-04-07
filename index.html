@@ -2,99 +2,76 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title></title>one Million YouTubers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Million YouTubers</title>
   <style>
+    :root {
+      --bg-color: rgba(30, 30, 47, 0.9);
+      --pixel-default: rgba(46, 46, 62, 0.3);
+      --pixel-hover: rgba(255, 0, 0, 0.6); /* YouTube Red hover */
+      --text-color: #f1f1f1;
+    }
+
     body {
       margin: 0;
-      font-family: sans-serif;
-      background: #f4f4f4;
-    }
-    h2 {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      margin: 20px 0;
-      font-size: 2em;
+      background: url('https://i.ytimg.com/vi/92a7Hj0ijLs/maxresdefault.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text-color);
     }
-    .grid {
+
+    h1 {
+      padding: 20px;
+      font-size: 2em;
+      background-color: var(--bg-color);
+      margin: 0;
+    }
+
+    #grid {
       display: grid;
       grid-template-columns: repeat(100, 10px);
       grid-template-rows: repeat(100, 10px);
+      gap: 1px;
+      margin: 20px auto;
       width: 1000px;
       height: 1000px;
-      margin: 0 auto;
+      background: var(--bg-color);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
     }
+
     .pixel {
       width: 10px;
       height: 10px;
-      box-sizing: border-box;
-      border: 0.5px solid #eee;
-      background-color: #ccc;
+      background-color: var(--pixel-default);
       cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .pixel:hover {
+      background-color: var(--pixel-hover);
     }
   </style>
 </head>
 <body>
+  <h1>One Million YouTubers</h1>
+  <div id="grid"></div>
 
-<h2>Million YouTubers</h2>
-<div class="grid" id="grid"></div>
-
-<script>
-  const grid = document.getElementById('grid');
-
-  for (let i = 0; i < 10000; i++) {
-    const pixel = document.createElement('div');
-    pixel.className = 'pixel';
-    pixel.title = `Pixel ${i + 1}`;
-
-    pixel.onclick = () => {
-      const url = prompt('Enter a YouTube channel or video URL:');
-      if (url) {
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.style.display = 'block';
-        a.style.width = '10px';
-        a.style.height = '10px';
-        a.style.backgroundColor = 'red';
-        pixel.replaceWith(a);
-        a.appendChild(pixel);
+  <script>
+    const grid = document.getElementById('grid');
+    for (let i = 0; i < 10000; i++) {
+      const pixel = document.createElement('div');
+      pixel.className = 'pixel';
+      pixel.title = `Pixel #${i + 1}`;
+      pixel.onclick = () => {
+        const url = prompt("Paste the YouTube channel link for this pixel:");
+        if (url && url.includes("youtube.com")) {
+          pixel.style.backgroundColor = '#FF0000'; // YouTube red
+          pixel.onclick = () => window.open(url, '_blank');
+        }
       }
-    };
-
-    grid.appendChild(pixel);
-  }
-</script>
-
+      grid.appendChild(pixel);
+    }
+  </script>
 </body>
-</html// server.js
-const express = require('express');
-const Stripe = require('stripe');
-const cors = require('cors');
-
-const app = express();
-const stripe = Stripe('your_stripe_secret_key');
-app.use(cors());
-app.use(express.json());
-
-app.post('/create-checkout-session', async (req, res) => {
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [{
-      price_data: {
-        currency: 'inr',
-        product_data: {
-          name: 'Pixel Block on My Million YouTubers',
-        },
-        unit_amount: 10000, // ₹100 in paise
-      },
-      quantity: 1,
-    }],
-    mode: 'payment',
-    success_url: 'https://yourdomain.com/success',
-    cancel_url: 'https://yourdomain.com/cancel',
-  });
-
-  res.json({ id: session.id });
-});
-
-app.listen(3000, () => console.log('Server running on port 3000'));
-
+</html>
